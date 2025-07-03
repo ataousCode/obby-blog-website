@@ -31,6 +31,7 @@ export const authOptions: NextAuthOptions = {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
         },
+        secure: process.env.EMAIL_SECURE === 'true',
       },
       from: process.env.EMAIL_FROM,
     }),

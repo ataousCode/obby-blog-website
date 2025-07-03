@@ -1,5 +1,3 @@
-// TypeScript version of the email client
-// Using dynamic import for ESM-only emailjs package
 import type { SMTPClient } from 'emailjs';
 
 interface EmailOptions {
@@ -23,7 +21,6 @@ class EmailClient {
   };
 
   constructor() {
-    // Client will be initialized lazily when needed
     this.config = {
       user: process.env.EMAIL_SERVER_USER || '',
       password: process.env.EMAIL_SERVER_PASSWORD || '',
@@ -34,7 +31,6 @@ class EmailClient {
       timeout: 10000
     };
     
-    // Log SMTP configuration (without sensitive data)
     console.log('Initializing EmailClient with config:', {
       host: this.config.host,
       port: this.config.port,

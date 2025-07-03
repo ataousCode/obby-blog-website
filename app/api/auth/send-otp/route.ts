@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 
-// Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
-
-// We'll use dynamic imports for EmailClient to handle ESM compatibility
 
 const sendOtpSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -18,7 +15,6 @@ function generateOTP(): string {
 
 async function createEmailClient() {
   try {
-    // Dynamically import the EmailClient at runtime
     const { EmailClient } = await import('@/lib/email-client');
     return new EmailClient();
   } catch (error) {

@@ -1,0 +1,15 @@
+services:
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: my-blog-mailhog
+    ports:
+      - "2525:1025"
+      - "8025:8025"
+    environment:
+      - MH_STORAGE=memory
+    networks:
+      - blog-network
+
+networks:
+  blog-network:
+    driver: bridge

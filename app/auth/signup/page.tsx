@@ -18,7 +18,7 @@ const signupSchema = z.object({
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Passwords don&apos;t match",
   path: ["confirmPassword"],
 })
 
@@ -250,7 +250,7 @@ export default function SignUpPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Verify Your Email</CardTitle>
               <CardDescription>
-                We've sent a 6-digit verification code to {formData.email}
+                We&apos;ve sent a 6-digit verification code to {formData.email}
               </CardDescription>
             </CardHeader>
             <CardContent>

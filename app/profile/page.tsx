@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -46,18 +46,7 @@ export default function ProfilePage() {
     image: ''
   })
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (session?.user?.id) {
-      fetchProfile()
-    }
-  }, [session, status, router])
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const response = await fetch(`/api/users/${session?.user?.id}?includeStats=true&includePosts=true`)
       if (response.ok) {
@@ -81,7 +70,20 @@ export default function ProfilePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [session?.user?.id, toast])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+      return
+    }
+
+    if (session?.user?.id) {
+      fetchProfile()
+    }
+  }, [session?.user?.id, status, router, fetchProfile])
+
+
 
   const handleSave = async () => {
     setIsSaving(true)

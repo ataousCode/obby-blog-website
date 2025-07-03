@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -233,9 +234,11 @@ export default function AdminAboutPage() {
                   {/* Current Image Preview */}
                   {formData.profileImage && (
                     <div className="relative inline-block">
-                      <img
+                      <Image
                         src={formData.profileImage}
                         alt="Profile preview"
+                        width={128}
+                        height={128}
                         className="w-32 h-32 object-cover rounded-lg border"
                       />
                       <Button

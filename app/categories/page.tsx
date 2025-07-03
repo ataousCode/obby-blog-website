@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -69,21 +69,7 @@ export default function CategoriesPage() {
     description: ''
   })
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
-      router.push('/dashboard')
-      return
-    }
-
-    fetchCategories()
-  }, [status, session, router])
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/categories?includePostCount=true')
       const data = await response.json()
@@ -106,7 +92,23 @@ export default function CategoriesPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+      return
+    }
+
+    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+      router.push('/dashboard')
+      return
+    }
+
+    fetchCategories()
+  }, [status, session, router, fetchCategories])
+
+
 
   const handleCreateCategory = async () => {
     if (!formData.name.trim()) {
@@ -414,7 +416,7 @@ export default function CategoriesPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Category</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{category.name}"? This action cannot be undone.
+                                Are you sure you want to delete &quot;{category.name}&quot;? This action cannot be undone.
                                 {category._count.posts > 0 && (
                                   <span className="block mt-2 text-destructive">
                                     Warning: This category has {category._count.posts} posts associated with it.

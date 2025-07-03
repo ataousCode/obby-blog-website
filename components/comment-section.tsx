@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -54,11 +54,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
   const [editContent, setEditContent] = useState('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchComments()
-  }, [postId])
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const response = await fetch(`/api/posts/${postId}/comments`)
       if (response.ok) {
@@ -70,7 +66,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [postId])
+
+  useEffect(() => {
+    fetchComments()
+  }, [fetchComments])
+
+
 
   const validateComment = (content: string) => {
     try {

@@ -322,7 +322,7 @@ export default function SignInPage() {
               </div>
               <CardTitle>Enter verification code</CardTitle>
               <CardDescription>
-                We've sent a 6-digit code to {formData.email}
+                We&apos;ve sent a 6-digit code to {formData.email}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -481,7 +481,7 @@ export default function SignInPage() {
             </Button>
 
             <div className="text-center text-sm">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/auth/signup" className="text-primary hover:underline">
                 Sign up
               </Link>

@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -62,21 +62,7 @@ export default function AdminPostsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
-      router.push('/dashboard')
-      return
-    }
-
-    fetchPosts()
-  }, [status, session, router])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const response = await fetch('/api/posts?published=all&limit=100')
       const data = await response.json()
@@ -99,7 +85,21 @@ export default function AdminPostsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+      return
+    }
+
+    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+      router.push('/dashboard')
+      return
+    }
+
+    fetchPosts()
+  }, [status, session, router, fetchPosts])
 
   const handleDeletePost = async (postId: string) => {
     setDeletingId(postId)
@@ -324,7 +324,7 @@ export default function AdminPostsPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Post</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{post.title}"? This action cannot be undone.
+                                Are you sure you want to delete &quot;{post.title}&quot;? This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -60,21 +60,7 @@ export default function AdminCommentsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
-      router.push('/dashboard')
-      return
-    }
-
-    fetchComments()
-  }, [status, session, router])
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/comments')
       const data = await response.json()
@@ -97,7 +83,21 @@ export default function AdminCommentsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+      return
+    }
+
+    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+      router.push('/dashboard')
+      return
+    }
+
+    fetchComments()
+  }, [status, session, router, fetchComments])
 
   const handleDeleteComment = async (commentId: string) => {
     setDeletingId(commentId)

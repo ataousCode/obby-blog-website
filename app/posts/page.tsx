@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -77,7 +77,7 @@ export default function PostsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/categories')
       if (response.ok) {
@@ -90,9 +90,9 @@ export default function PostsPage() {
       console.error('Error fetching categories:', error)
       setCategories([])
     }
-  }
+  }, [])
   
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
       const response = await fetch('/api/tags')
       if (response.ok) {
@@ -105,9 +105,9 @@ export default function PostsPage() {
       console.error('Error fetching tags:', error)
       setTags([])
     }
-  }
+  }, [])
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams({
@@ -133,7 +133,7 @@ export default function PostsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [currentPage, searchQuery, selectedCategory, selectedTag])
 
   // Initialize filters from URL parameters
   useEffect(() => {
@@ -148,9 +148,12 @@ export default function PostsPage() {
 
   useEffect(() => {
     fetchPosts()
+  }, [fetchPosts])
+
+  useEffect(() => {
     fetchCategories()
     fetchTags()
-  }, [currentPage, searchQuery, selectedCategory, selectedTag])
+  }, [fetchCategories, fetchTags])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

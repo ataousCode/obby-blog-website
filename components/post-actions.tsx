@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
@@ -20,15 +20,7 @@ export function PostActions({ postId, className }: PostActionsProps) {
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    if (session?.user && 'id' in session.user) {
-      checkLikeStatus()
-      checkBookmarkStatus()
-    }
-    fetchLikeCount()
-  }, [session?.user && 'id' in session.user ? session.user.id : null, postId])
-
-  const checkLikeStatus = async () => {
+  const checkLikeStatus = useCallback(async () => {
     try {
       const response = await fetch(`/api/posts/${postId}/like/status`)
       if (response.ok) {
@@ -38,9 +30,9 @@ export function PostActions({ postId, className }: PostActionsProps) {
     } catch (error) {
       console.error('Error checking like status:', error)
     }
-  }
+  }, [postId])
 
-  const checkBookmarkStatus = async () => {
+  const checkBookmarkStatus = useCallback(async () => {
     try {
       const response = await fetch(`/api/posts/${postId}/bookmark/status`)
       if (response.ok) {
@@ -50,9 +42,9 @@ export function PostActions({ postId, className }: PostActionsProps) {
     } catch (error) {
       console.error('Error checking bookmark status:', error)
     }
-  }
+  }, [postId])
 
-  const fetchLikeCount = async () => {
+  const fetchLikeCount = useCallback(async () => {
     try {
       const response = await fetch(`/api/posts/${postId}/like/count`)
       if (response.ok) {
@@ -62,7 +54,17 @@ export function PostActions({ postId, className }: PostActionsProps) {
     } catch (error) {
       console.error('Error fetching like count:', error)
     }
-  }
+  }, [postId])
+
+  useEffect(() => {
+    if (session?.user && 'id' in session.user) {
+      checkLikeStatus()
+      checkBookmarkStatus()
+    }
+    fetchLikeCount()
+  }, [session?.user, checkLikeStatus, checkBookmarkStatus, fetchLikeCount])
+
+
 
   const handleLike = async () => {
     if (!session?.user || !('id' in session.user)) {

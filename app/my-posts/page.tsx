@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast'
 import { Loader2, Search, Edit, Trash2, Eye, Calendar, Tag, User } from 'lucide-react'
 import Link from 'next/link'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 
 interface Post {
   id: string
@@ -62,13 +62,7 @@ export default function MyPostsPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchPosts()
-    }
-  }, [session, currentPage, statusFilter, searchTerm])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams({
@@ -104,7 +98,15 @@ export default function MyPostsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [currentPage, session?.user?.id, statusFilter, searchTerm, toast])
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchPosts()
+    }
+  }, [session?.user?.id, fetchPosts])
+
+
 
   const handleDelete = async (postId: string) => {
     if (!confirm('Are you sure you want to delete this post?')) {
@@ -219,7 +221,7 @@ export default function MyPostsPage() {
                   <p className="text-muted-foreground">
                     {searchTerm || statusFilter !== 'all'
                       ? 'Try adjusting your search or filters'
-                      : "You haven't written any posts yet"}
+                      : "You haven&apos;t written any posts yet"}
                   </p>
                 </div>
                 {!searchTerm && statusFilter === 'all' && (

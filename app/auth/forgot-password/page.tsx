@@ -17,7 +17,7 @@ const resetSchema = z.object({
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Passwords don&apos;t match",
   path: ["confirmPassword"],
 })
 
@@ -313,8 +313,8 @@ export default function ForgotPasswordPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Verify Your Email</CardTitle>
               <CardDescription>
-                We've sent a 6-digit verification code to {email}
-              </CardDescription>
+              We&apos;ve sent a 6-digit verification code to {email}
+            </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleVerifyOtp} className="space-y-4">
@@ -446,7 +446,7 @@ export default function ForgotPasswordPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Forgot Password</CardTitle>
             <CardDescription>
-              Enter your email address and we'll send you a verification code to reset your password.
+              Enter your email address and we&apos;ll send you a verification code to reset your password.
             </CardDescription>
           </CardHeader>
           <CardContent>

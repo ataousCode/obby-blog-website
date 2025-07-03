@@ -1,4 +1,6 @@
-import { SMTPClient, Message } from 'emailjs';
+// TypeScript version of the email client
+// Using dynamic import for ESM-only emailjs package
+import type { SMTPClient } from 'emailjs';
 
 interface EmailOptions {
   from: string;
@@ -9,43 +11,69 @@ interface EmailOptions {
 }
 
 class EmailClient {
-  private client: SMTPClient;
+  private client: SMTPClient | null = null;
+  private config: {
+    user: string;
+    password: string;
+    host: string;
+    port: number;
+    ssl: boolean;
+    tls: boolean;
+    timeout: number;
+  };
 
   constructor() {
-    // Log SMTP configuration (without sensitive data)
-    console.log('Initializing EmailClient with config:', {
-      host: process.env.EMAIL_SERVER_HOST || 'smtp.gmail.com',
-      port: Number(process.env.EMAIL_SERVER_PORT) || 465,
-      user: process.env.EMAIL_SERVER_USER ? '✓ Set' : '✗ Not set',
-      password: process.env.EMAIL_SERVER_PASSWORD ? '✓ Set' : '✗ Not set',
-      ssl: process.env.EMAIL_SECURE === 'true',
-      tls: process.env.EMAIL_SECURE !== 'true'
-    });
-    
-    // Create SMTP client
-    this.client = new SMTPClient({
+    // Client will be initialized lazily when needed
+    this.config = {
       user: process.env.EMAIL_SERVER_USER || '',
       password: process.env.EMAIL_SERVER_PASSWORD || '',
       host: process.env.EMAIL_SERVER_HOST || 'smtp.gmail.com',
       port: Number(process.env.EMAIL_SERVER_PORT) || 465,
       ssl: process.env.EMAIL_SECURE === 'true',
       tls: process.env.EMAIL_SECURE !== 'true',
-      timeout: 10000 // 10 second timeout
+      timeout: 10000
+    };
+    
+    // Log SMTP configuration (without sensitive data)
+    console.log('Initializing EmailClient with config:', {
+      host: this.config.host,
+      port: this.config.port,
+      user: process.env.EMAIL_SERVER_USER ? '✓ Set' : '✗ Not set',
+      password: process.env.EMAIL_SERVER_PASSWORD ? '✓ Set' : '✗ Not set',
+      ssl: this.config.ssl,
+      tls: this.config.tls
     });
   }
   
+  // Initialize SMTP client with dynamic import
+  async initClient(): Promise<SMTPClient> {
+    if (this.client) return this.client;
+    
+    try {
+      // Dynamically import emailjs (ESM module)
+      const emailjs = await import('emailjs');
+      this.client = new emailjs.SMTPClient(this.config);
+      return this.client;
+    } catch (error) {
+      console.error('Failed to initialize SMTP client:', error);
+      throw new Error(`SMTP client initialization failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   // Test connection to SMTP server
   async testConnection(): Promise<boolean> {
+    const client = await this.initClient();
+    
     return new Promise((resolve, reject) => {
       try {
-        this.client.smtp.connect((err: Error | null) => {
+        client.smtp.connect((err: Error | null) => {
           if (err) {
             console.error('SMTP connection test failed:', err);
             reject(err);
           } else {
             console.log('SMTP connection test successful');
             // Disconnect after successful test
-            this.client.smtp.quit();
+            client.smtp.quit();
             resolve(true);
           }
         });
@@ -64,8 +92,14 @@ class EmailClient {
       if (!options.subject) throw new Error('Email subject is required');
       if (!options.text && !options.html) throw new Error('Email content (text or html) is required');
       
+      // Initialize client if not already done
+      const client = await this.initClient();
+      
+      // Dynamically import Message from emailjs
+      const emailjs = await import('emailjs');
+      
       // Create a proper Message instance
-      const message = new Message({
+      const message = new emailjs.Message({
         text: options.text || '',
         from: options.from,
         to: options.to,
@@ -89,7 +123,7 @@ class EmailClient {
             reject(new Error('Email sending timed out after 30 seconds'));
           }, 30000); // 30 second timeout
           
-          this.client.sendAsync(message)
+          client.sendAsync(message)
             .then(result => {
               clearTimeout(timeoutId);
               resolve(result);

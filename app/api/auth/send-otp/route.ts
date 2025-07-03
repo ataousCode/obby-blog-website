@@ -5,20 +5,7 @@ import { prisma } from '@/lib/db';
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
 
-// Import EmailClient with a dynamic import to handle both TS and JS versions
-let EmailClient: any;
-try {
-  // Try to import from the JS version first (for production)
-  EmailClient = require('@/lib/email-client').EmailClient;
-} catch (error) {
-  // Fall back to the TS version (for development)
-  console.warn('Failed to import EmailClient from JS, trying TS version');
-  import('@/lib/email-client').then(module => {
-    EmailClient = module.EmailClient;
-  }).catch(err => {
-    console.error('Failed to import EmailClient:', err);
-  });
-}
+// We'll use dynamic imports for EmailClient to handle ESM compatibility
 
 const sendOtpSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -29,11 +16,10 @@ function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function createEmailClient() {
-  if (!EmailClient) {
-    throw new Error('EmailClient is not available - check email client imports');
-  }
+async function createEmailClient() {
   try {
+    // Dynamically import the EmailClient at runtime
+    const { EmailClient } = await import('@/lib/email-client');
     return new EmailClient();
   } catch (error) {
     console.error('Error creating EmailClient instance:', error);
@@ -65,7 +51,7 @@ async function sendOTPEmail(email: string, otp: string, type: string) {
 
   try {
     console.log('Creating email client...');
-    const emailClient = createEmailClient();
+    const emailClient = await createEmailClient();
     
     console.log('Email client created, preparing to send email...');
     console.log('Email environment variables:', {

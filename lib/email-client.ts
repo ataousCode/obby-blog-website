@@ -38,7 +38,7 @@ class EmailClient {
       };
 
       console.log('Sending email with emailjs using Gmail SMTP...');
-      console.log(`Host: ${this.client.smtp.host}, Port: ${this.client.smtp.port}, Secure: ${this.client.smtp.ssl}`);
+      console.log(`Using configured SMTP settings from environment variables`);
       console.log(`From: ${options.from}, To: ${options.to}`);
       
       const result = await this.client.sendAsync(message);
@@ -46,7 +46,10 @@ class EmailClient {
       return { success: true, result };
     } catch (error) {
       console.error('Email sending failed:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
+      if (error && typeof error === 'object' && 'code' in error) {
+        console.error('Error code:', (error as any).code);
+      }
       throw error;
     }
   }

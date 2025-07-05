@@ -4,15 +4,15 @@ export const siteConfig = {
   url: "https://my-blog.vercel.app",
   ogImage: "https://my-blog.vercel.app/og.jpg",
   links: {
-    twitter: "https://twitter.com/yourusername",
-    github: "https://github.com/yourusername/my-blog",
-    linkedin: "https://linkedin.com/in/yourusername",
-    email: "mailto:contact@yourblog.com"
+    twitter: "https://twitter.com/almousleck",
+    github: "https://github.com/ataousCode/obby-blog-website",
+    linkedin: "https://linkedin.com/in/almousleck",
+    email: "mailto:tadalatestudio@gmail.com"
   },
   author: {
-    name: "Your Name",
-    email: "contact@yourblog.com",
-    twitter: "@yourusername"
+    name: "Almousleck",
+    email: "tadalatestudio@gmail.com",
+    twitter: "@almousleck"
   },
   keywords: [
     "blog",

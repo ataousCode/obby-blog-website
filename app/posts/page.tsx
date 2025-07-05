@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Loader2, Search, Calendar, User, Heart, MessageCircle, Clock } from 'lucide-react'
 import { formatDate, formatRelativeTime, readingTime } from '@/lib/utils'
 import { Loading, PostListSkeleton } from '@/components/loading'
@@ -312,7 +313,12 @@ export default function PostsPage() {
                       <CardContent className="pt-0">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <User className="h-4 w-4" />
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage src={post.author.image || ''} alt={post.author.name || ''} />
+                              <AvatarFallback className="text-xs">
+                                {post.author.name?.charAt(0) || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
                             <span>{post.author.name}</span>
                             {post.category && (
                               <>

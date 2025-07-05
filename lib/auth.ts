@@ -82,6 +82,7 @@ export const authOptions: NextAuthOptions = {
               name: user.name,
               role: user.role,
               isSubscribed: user.isSubscribed,
+              image: user.image,
             }
           } catch (error) {
             return null
@@ -117,6 +118,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           isSubscribed: user.isSubscribed,
+          image: user.image,
         }
       },
     }),
@@ -128,6 +130,7 @@ export const authOptions: NextAuthOptions = {
           ...token,
           role: (user as any).role,
           isSubscribed: (user as any).isSubscribed,
+          image: (user as any).image,
         }
       }
       
@@ -148,8 +151,9 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.sub,
-          role: token.role,
+          role: token.role as string,
           isSubscribed: token.isSubscribed,
+          image: token.image as string | null | undefined,
         },
       }
     },

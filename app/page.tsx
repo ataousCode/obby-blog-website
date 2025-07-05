@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Link from 'next/link'
 import { PostCoverImage } from '@/components/optimized-image'
 import { ArrowRight, Calendar, Eye, Heart, MessageCircle, Microscope, Dna, Atom, FlaskConical } from 'lucide-react'
@@ -18,6 +19,7 @@ interface Post {
   views: number
   author: {
     name: string | null
+    image: string | null
   }
   category: {
     name: string
@@ -59,7 +61,8 @@ async function getFeaturedPosts(): Promise<Post[]> {
         views: true,
         author: {
           select: {
-            name: true
+            name: true,
+            image: true
           }
         },
         category: {
@@ -249,7 +252,15 @@ export default async function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <span>By {post.author.name || 'Unknown Author'}</span>
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-5 w-5">
+                        <AvatarImage src={post.author.image || ''} alt={post.author.name || ''} />
+                        <AvatarFallback className="text-xs">
+                          {post.author.name?.charAt(0) || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>By {post.author.name || 'Unknown Author'}</span>
+                    </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Not published'}

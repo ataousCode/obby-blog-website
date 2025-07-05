@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, Mail } from 'lucide-react'
+import { Loader2, Mail, Lock } from 'lucide-react'
 import { z } from 'zod'
 
 const signinSchema = z.object({
@@ -87,18 +87,13 @@ export default function SignInPage() {
           variant: "destructive"
         })
       } else {
-        // Check if user is admin
-        const session = await getSession()
-        if ((session?.user as any)?.role === 'ADMIN') {
-          router.push('/admin')
-        } else {
-          router.push('/dashboard')
-        }
-        
         toast({
           title: "Success",
           description: "Signed in successfully!",
         })
+        
+        // Force complete page refresh to ensure session is updated
+        window.location.href = '/'
       }
     } catch (error) {
       toast({
@@ -205,18 +200,14 @@ export default function SignInPage() {
             variant: "destructive"
           })
         } else {
-          const session = await getSession()
-          if ((session?.user as any)?.role === 'ADMIN') {
-            router.push('/admin')
-          } else {
-            router.push('/dashboard')
-          }
-          
           toast({
             title: "Success",
             description: "Signed in successfully!",
             variant: "success",
           })
+          
+          // Force complete page refresh to ensure session is updated
+          window.location.href = '/'
         }
       } else {
         toast({

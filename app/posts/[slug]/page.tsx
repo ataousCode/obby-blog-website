@@ -273,7 +273,12 @@ export default async function PostPage({ params }: PostPageProps) {
                   <CardContent className="pt-0">
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage src={relatedPost.author?.image || ''} alt={relatedPost.author?.name || ''} />
+                          <AvatarFallback className="text-xs">
+                            {relatedPost.author?.name?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
                         <span>{relatedPost.author?.name}</span>
                       </div>
                       <div className="flex items-center gap-3">

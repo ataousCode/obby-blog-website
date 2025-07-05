@@ -20,7 +20,6 @@ async function getAboutPageData() {
     }
     
     const aboutPage = await prisma.aboutPage.findFirst()
-    // Also fetch admin user data for profile info
     const adminUser = await prisma.user.findFirst({
       where: { role: 'ADMIN' }
     })
@@ -33,9 +32,7 @@ async function getAboutPageData() {
 
 export default async function AboutPage() {
   const { aboutPage, adminUser } = await getAboutPageData()
-  
-  // Fallback data if no database content exists
-  const data = aboutPage || {
+    const data = aboutPage || {
     profileImage: '/images/profile.svg',
     name: 'Dr. [Your Name]',
     title: 'Professor of Biology and Science',

@@ -5,6 +5,7 @@ import EmailProvider from 'next-auth/providers/email'
 import { db } from './db'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+import { verify } from 'jsonwebtoken'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -47,9 +48,48 @@ export const authOptions: NextAuthOptions = {
           label: 'Password',
           type: 'password',
         },
+        otpToken: {
+          label: 'OTP Token',
+          type: 'text',
+        },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email) {
+          return null
+        }
+
+        // Handle OTP token authentication
+        if (credentials.otpToken) {
+          try {
+            const jwtSecret = process.env.NEXTAUTH_SECRET || 'fallback-secret'
+            const decoded = verify(credentials.otpToken, jwtSecret) as any
+            
+            if (decoded.email !== credentials.email || !decoded.verified) {
+              return null
+            }
+
+            const user = await db.user.findUnique({
+              where: { email: credentials.email },
+            })
+
+            if (!user) {
+              return null
+            }
+
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              isSubscribed: user.isSubscribed,
+            }
+          } catch (error) {
+            return null
+          }
+        }
+
+        // Handle password authentication
+        if (!credentials.password) {
           return null
         }
 

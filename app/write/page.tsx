@@ -263,6 +263,7 @@ export default function WritePage() {
           description: published 
             ? "Your post has been published successfully." 
             : "Your draft has been saved successfully.",
+          variant: "success",
         })
         router.push(published ? `/posts/${data.post.slug}` : '/dashboard')
       } else {

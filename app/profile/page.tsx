@@ -102,7 +102,8 @@ export default function ProfilePage() {
         setIsEditing(false)
         toast({
           title: 'Success',
-          description: 'Profile updated successfully'
+          description: 'Profile updated successfully',
+          variant: 'success'
         })
       } else {
         const error = await response.json()
@@ -163,7 +164,8 @@ export default function ProfilePage() {
         setFormData(prev => ({ ...prev, image: data.url }))
         toast({
           title: 'Success',
-          description: 'Image uploaded successfully'
+          description: 'Image uploaded successfully',
+          variant: 'success'
         })
       } else {
         const error = await response.json()

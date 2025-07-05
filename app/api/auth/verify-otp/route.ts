@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { hash } from 'bcryptjs'
+import { sign } from 'jsonwebtoken'
+
+// Force dynamic rendering to prevent caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 const verifyOtpSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -13,6 +18,14 @@ const verifyOtpSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if prisma is available
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database connection not available' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const validatedData = verifyOtpSchema.parse(body)
     const { email, otp, password, name, type } = validatedData
@@ -72,10 +85,7 @@ export async function POST(request: NextRequest) {
       // Delete the verification token
       await prisma.verificationToken.delete({
         where: {
-          identifier_token: {
-            identifier: email,
-            token: otp
-          }
+          id: verificationToken.id
         }
       })
 
@@ -114,16 +124,26 @@ export async function POST(request: NextRequest) {
       // Delete the verification token
       await prisma.verificationToken.delete({
         where: {
-          identifier_token: {
-            identifier: email,
-            token: otp
-          }
+          id: verificationToken.id
         }
       })
+
+      // Generate a temporary JWT token for NextAuth signin
+      const jwtSecret = process.env.NEXTAUTH_SECRET || 'fallback-secret'
+      const token = sign(
+        { 
+          email: user.email,
+          id: user.id,
+          verified: true,
+          exp: Math.floor(Date.now() / 1000) + (60 * 5) // 5 minutes
+        },
+        jwtSecret
+      )
 
       return NextResponse.json(
         { 
           message: 'Email verified successfully',
+          token,
           user: {
             id: user.id,
             name: user.name,
@@ -167,10 +187,7 @@ export async function POST(request: NextRequest) {
       // Delete the verification token
       await prisma.verificationToken.delete({
         where: {
-          identifier_token: {
-            identifier: email,
-            token: otp
-          }
+          id: verificationToken.id
         }
       })
 

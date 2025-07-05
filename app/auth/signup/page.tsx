@@ -153,6 +153,7 @@ export default function SignUpPage() {
         toast({
           title: "Success!",
           description: "Account created successfully. You can now sign in.",
+          variant: "success",
         })
         
         // Redirect to sign in page after a short delay
@@ -198,6 +199,7 @@ export default function SignUpPage() {
         toast({
           title: "Code resent!",
           description: "A new verification code has been sent to your email.",
+          variant: "success",
         })
       } else {
         toast({

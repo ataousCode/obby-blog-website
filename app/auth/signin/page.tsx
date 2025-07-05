@@ -141,6 +141,7 @@ export default function SignInPage() {
         toast({
           title: "Verification code sent!",
           description: "Please check your email for the 6-digit verification code.",
+          variant: "success",
         })
       } else {
         toast({
@@ -214,6 +215,7 @@ export default function SignInPage() {
           toast({
             title: "Success",
             description: "Signed in successfully!",
+            variant: "success",
           })
         }
       } else {
@@ -258,6 +260,7 @@ export default function SignInPage() {
         toast({
           title: "Check your email",
           description: "A sign-in link has been sent to your email address.",
+          variant: "success",
         })
       }
     } catch (error) {
@@ -292,6 +295,7 @@ export default function SignInPage() {
         toast({
           title: "Code resent!",
           description: "A new verification code has been sent to your email.",
+          variant: "success",
         })
       } else {
         toast({

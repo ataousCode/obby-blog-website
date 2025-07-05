@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
         excerpt: excerpt || null,
         slug,
         coverImage: featuredImage || null,
+        status: published ? 'PUBLISHED' : 'DRAFT',
         publishedAt: published ? new Date() : null,
         authorId: session.user.id,
         categoryId: categoryId || null,
@@ -169,7 +170,15 @@ export async function GET(req: NextRequest) {
     const where: any = {}
     
     if (published !== undefined) {
-      where.publishedAt = published ? { not: null } : null
+      if (published) {
+        where.status = 'PUBLISHED'
+        where.publishedAt = { not: null }
+      } else {
+        where.OR = [
+          { status: 'DRAFT' },
+          { publishedAt: null }
+        ]
+      }
     }
 
     if (author) {

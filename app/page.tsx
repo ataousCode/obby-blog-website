@@ -45,6 +45,7 @@ async function getFeaturedPosts(): Promise<Post[]> {
 
     const posts = await prisma.post.findMany({
       where: {
+        status: 'PUBLISHED',
         publishedAt: { not: null }
       },
       select: {

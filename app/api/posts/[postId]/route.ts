@@ -172,6 +172,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     if (excerpt !== undefined) updateData.excerpt = excerpt
     if (categoryId !== undefined) updateData.categoryId = categoryId
     if (published !== undefined) {
+      updateData.status = published ? 'PUBLISHED' : 'DRAFT'
       updateData.publishedAt = published ? new Date() : null
     }
 

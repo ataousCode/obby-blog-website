@@ -13,7 +13,7 @@ export function Footer() {
               <span className="text-xl font-bold">My Blog</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              A modern blog platform for developers and tech enthusiasts. 
+              A modern blog platform for Biology and Science enthusiasts. 
               Share knowledge, learn together, and build amazing things.
             </p>
           </div>
@@ -77,15 +77,6 @@ export function Footer() {
             <h3 className="text-sm font-semibold">Connect</h3>
             <div className="flex space-x-4">
               <Link
-                href="https://github.com"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Github className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </Link>
-              <Link
                 href="https://twitter.com"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 target="_blank"
@@ -122,7 +113,7 @@ export function Footer() {
             © {new Date().getFullYear()} My Blog. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground mt-2 md:mt-0">
-            Built with Next.js, Tailwind CSS, and ❤️
+            Built with React Next.js, Tailwind CSS, and ❤️ by atalibdev
           </p>
         </div>
       </div>

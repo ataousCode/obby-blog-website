@@ -37,13 +37,9 @@ export function Navbar() {
 
   const confirmSignOut = async () => {
     try {
-      // Use redirect: false to handle redirect manually
       await signOut({ callbackUrl: "/", redirect: false })
-      // Manual redirect after successful logout
       window.location.href = '/'
     } catch (error) {
-      console.error('Logout error:', error)
-      // Fallback: redirect manually if signOut fails
       window.location.href = '/'
     }
     setShowLogoutDialog(false)
@@ -56,7 +52,7 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <BookOpen className="h-6 w-6" />
-            <span className="text-xl font-bold">My Blog</span>
+            <span className="text-xl font-bold">Obey Zveushe</span>
           </Link>
 
           {/* Desktop Navigation */}

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, User, Mail, Calendar, Shield, PenTool, BookOpen, Heart, Users, FileText, MessageSquare, Eye, ThumbsUp, Settings, Edit } from 'lucide-react'
+import { Loader2, User, Mail, Calendar, Shield, PenTool, BookOpen, Heart, Users, FileText, MessageSquare, Eye, ThumbsUp, Settings, Edit, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
 interface AdminStats {
@@ -46,7 +46,7 @@ export default function DashboardPage() {
             setStats(data.stats)
           }
         } catch (error) {
-          console.error('Failed to fetch admin stats:', error)
+          // Admin stats fetch failed silently
         }
       }
       
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             })
           }
         } catch (error) {
-          console.error('Failed to fetch user stats:', error)
+          // User stats fetch failed silently
         }
       }
       
@@ -281,7 +281,7 @@ export default function DashboardPage() {
               Admin Management
             </h2>
             
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* Content Management */}
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
@@ -306,6 +306,27 @@ export default function DashboardPage() {
                       </Link>
                     </Button>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Site Analytics */}
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Site Analytics
+                  </CardTitle>
+                  <CardDescription>
+                    Monitor site performance and user engagement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" asChild>
+                    <Link href="/admin/analytics">
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      View Analytics
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
 

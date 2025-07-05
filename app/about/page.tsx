@@ -19,7 +19,6 @@ async function getAboutPageData() {
   try {
     // Check if prisma client is available
     if (!prisma) {
-      console.warn('Prisma client not available, using fallback data')
       return { aboutPage: null, adminUser: null }
     }
     
@@ -29,7 +28,6 @@ async function getAboutPageData() {
     })
     return { aboutPage, adminUser }
   } catch (error) {
-    console.error('Error fetching about page data:', error)
     return { aboutPage: null, adminUser: null }
   }
 }

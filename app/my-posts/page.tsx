@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { useToast } from '@/components/ui/use-toast'
 import { Loader2, Search, Edit, Trash2, Eye, Calendar, Tag, User } from 'lucide-react'
 import Link from 'next/link'
@@ -106,13 +107,7 @@ export default function MyPostsPage() {
     }
   }, [session?.user?.id, fetchPosts])
 
-
-
   const handleDelete = async (postId: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) {
-      return
-    }
-
     setIsDeleting(postId)
     try {
       const response = await fetch(`/api/posts/${postId}`, {
@@ -302,18 +297,35 @@ export default function MyPostsPage() {
                           <Edit className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(post.id)}
-                        disabled={isDeleting === post.id}
-                      >
-                        {isDeleting === post.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete this post?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(post.id)}
+                              disabled={isDeleting === post.id}
+                            >
+                              {isDeleting === post.id ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="mr-2 h-4 w-4" />
+                              )}
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 </CardContent>

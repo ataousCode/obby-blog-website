@@ -28,8 +28,8 @@ export function PostActions({ postId, className }: PostActionsProps) {
         setIsLiked(data.isLiked)
       }
     } catch (error) {
-      console.error('Error checking like status:', error)
-    }
+        // Like status check failed silently
+      }
   }, [postId])
 
   const checkBookmarkStatus = useCallback(async () => {
@@ -40,8 +40,8 @@ export function PostActions({ postId, className }: PostActionsProps) {
         setIsBookmarked(data.isBookmarked)
       }
     } catch (error) {
-      console.error('Error checking bookmark status:', error)
-    }
+        // Bookmark status check failed silently
+      }
   }, [postId])
 
   const fetchLikeCount = useCallback(async () => {
@@ -52,8 +52,8 @@ export function PostActions({ postId, className }: PostActionsProps) {
         setLikeCount(data.count)
       }
     } catch (error) {
-      console.error('Error fetching like count:', error)
-    }
+        // Like count fetch failed silently
+      }
   }, [postId])
 
   useEffect(() => {

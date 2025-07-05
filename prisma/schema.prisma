@@ -60,6 +60,8 @@ model User {
   likes        Like[]
   commentLikes CommentLike[]
   bookmarks    Bookmark[]
+  pageViews    PageView[]
+  userSessions UserSession[]
 }
 
 model VerificationToken {
@@ -103,6 +105,7 @@ model Post {
   comments  Comment[]
   likes     Like[]
   bookmarks Bookmark[]
+  pageViews PageView[]
   tagIds    String[]  @db.ObjectId
   tags      Tag[]     @relation(fields: [tagIds], references: [id])
 }
@@ -187,4 +190,59 @@ model AboutPage {
   blogPurpose           String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+model PageView {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  path      String
+  userAgent String?
+  ipAddress String?
+  referrer  String?
+  country   String?
+  device    String?
+  browser   String?
+  os        String?
+  createdAt DateTime @default(now())
+
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  postId String? @db.ObjectId
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: SetNull)
+}
+
+model UserSession {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId    String   @unique
+  startTime    DateTime @default(now())
+  endTime      DateTime?
+  duration     Int?     // in seconds
+  pageViews    Int      @default(0)
+  bounceRate   Boolean  @default(false)
+  userAgent    String?
+  ipAddress    String?
+  country      String?
+  device       String?
+  browser      String?
+  os           String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model SiteMetrics {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  date            DateTime @unique
+  totalViews      Int      @default(0)
+  uniqueVisitors  Int      @default(0)
+  totalSessions   Int      @default(0)
+  avgSessionTime  Float    @default(0)
+  bounceRate      Float    @default(0)
+  newUsers        Int      @default(0)
+  returningUsers  Int      @default(0)
+  topPages        String[] @default([])
+  topReferrers    String[] @default([])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

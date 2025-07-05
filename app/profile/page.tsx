@@ -29,7 +29,7 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
   const router = useRouter()
   const { toast } = useToast()
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -100,6 +100,17 @@ export default function ProfilePage() {
         const data = await response.json()
         setProfile(data.user)
         setIsEditing(false)
+        
+        // Update the session to reflect the new profile data
+        await update({
+          ...session,
+          user: {
+            ...session?.user,
+            name: data.user.name,
+            image: data.user.image,
+          }
+        })
+        
         toast({
           title: 'Success',
           description: 'Profile updated successfully',

@@ -66,11 +66,9 @@ export default function AdminPage() {
         
         if (response.ok) {
           setStats(data.stats)
-        } else {
-          console.error('Failed to fetch admin stats:', data.error)
         }
       } catch (error) {
-        console.error('Failed to fetch admin stats:', error)
+        // Error handled silently
       } finally {
         setIsLoading(false)
       }
@@ -295,7 +293,7 @@ export default function AdminPage() {
         </div>
 
         {/* Analytics */}
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -306,10 +304,18 @@ export default function AdminPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Analytics dashboard coming soon</p>
-              <p className="text-sm">Track user engagement, popular posts, and site metrics</p>
+            <div className="space-y-4">
+              <div className="text-center">
+                <TrendingUp className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <p className="text-lg font-medium">Advanced Analytics Available</p>
+                <p className="text-sm text-muted-foreground">Track user engagement, popular posts, and site metrics</p>
+              </div>
+              <Button className="w-full" asChild>
+                <Link href="/admin/analytics">
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  View Analytics Dashboard
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

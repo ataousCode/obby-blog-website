@@ -22,7 +22,6 @@ async function getPost(slug: string) {
   try {
     // Check if prisma client is available
     if (!prisma) {
-      console.warn('Prisma client not available')
       return null
     }
     
@@ -53,7 +52,6 @@ async function getPost(slug: string) {
 
     return post
   } catch (error) {
-    console.error('Error fetching post:', error)
     return null
   }
 }
@@ -62,7 +60,6 @@ async function getRelatedPosts(postId: string, categoryId?: string, limit: numbe
   try {
     // Check if prisma client is available
     if (!prisma) {
-      console.warn('Prisma client not available')
       return []
     }
     
@@ -96,7 +93,6 @@ async function getRelatedPosts(postId: string, categoryId?: string, limit: numbe
 
     return relatedPosts
   } catch (error) {
-    console.error('Error fetching related posts:', error)
     return []
   }
 }
@@ -117,7 +113,7 @@ export default async function PostPage({ params }: PostPageProps) {
       })
     }
   } catch (error) {
-    console.error('Error incrementing view count:', error)
+    // View count increment failed silently
   }
 
   const relatedPosts = await getRelatedPosts(post.id, post.categoryId || undefined)
@@ -225,9 +221,10 @@ export default async function PostPage({ params }: PostPageProps) {
 
           {/* Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert">
-            <div className="whitespace-pre-wrap leading-relaxed">
-              {post.content}
-            </div>
+            <div 
+              className="leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
           </div>
         </article>
 

@@ -324,7 +324,7 @@ export default function AdminPostsPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Post</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete &quot;{post.title}&quot;? This action cannot be undone.
+                                Are you sure you want to delete this post?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

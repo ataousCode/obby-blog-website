@@ -108,8 +108,6 @@ export default function CategoriesPage() {
     fetchCategories()
   }, [status, session, router, fetchCategories])
 
-
-
   const handleCreateCategory = async () => {
     if (!formData.name.trim()) {
       toast({

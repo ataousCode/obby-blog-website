@@ -6,6 +6,8 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { Toaster } from '@/components/ui/toaster'
 import { AuthProvider } from '@/components/auth-provider'
+import AnalyticsTracker from '@/components/analytics-tracker'
+import { PerformanceMonitor } from '@/components/performance-monitor'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -39,6 +41,8 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <div className="min-h-screen flex flex-col">
+              <AnalyticsTracker />
+              <PerformanceMonitor />
               <Navbar />
               <main className="flex-1">
                 {children}

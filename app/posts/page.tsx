@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { PostCoverImage } from '@/components/optimized-image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, Search, Calendar, User, Heart, MessageCircle, Clock } from 'lucide-react'
 import { formatDate, formatRelativeTime, readingTime } from '@/lib/utils'
+import { Loading, PostListSkeleton } from '@/components/loading'
 
 interface Author {
   id: string
@@ -87,9 +88,9 @@ export default function PostsPage() {
         setCategories([])
       }
     } catch (error) {
-      console.error('Error fetching categories:', error)
-      setCategories([])
-    }
+        // Categories fetch failed silently
+        setCategories([])
+      }
   }, [])
   
   const fetchTags = useCallback(async () => {
@@ -102,9 +103,9 @@ export default function PostsPage() {
         setTags([])
       }
     } catch (error) {
-      console.error('Error fetching tags:', error)
-      setTags([])
-    }
+        // Tags fetch failed silently
+        setTags([])
+      }
   }, [])
 
   const fetchPosts = useCallback(async () => {
@@ -125,11 +126,9 @@ export default function PostsPage() {
       if (response.ok) {
         setPosts(data.posts)
         setPagination(data.pagination)
-      } else {
-        console.error('Failed to fetch posts')
       }
     } catch (error) {
-      console.error('Error fetching posts:', error)
+      // Posts fetch failed silently
     } finally {
       setIsLoading(false)
     }
@@ -242,11 +241,7 @@ export default function PostsPage() {
         </div>
 
         {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        )}
+        {isLoading && <PostListSkeleton count={9} />}
 
         {/* Posts Grid */}
         {!isLoading && (
@@ -272,14 +267,10 @@ export default function PostsPage() {
                     <Card key={post.id} className="h-full flex flex-col hover:shadow-lg transition-shadow overflow-hidden">
                       {/* Featured Image */}
                       {post.coverImage && (
-                        <div className="relative h-48 w-full">
-                          <Image
-                            src={post.coverImage}
-                            alt={post.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
+                        <PostCoverImage
+                          src={post.coverImage}
+                          alt={post.title}
+                        />
                       )}
                       
                       <CardHeader className="flex-1">

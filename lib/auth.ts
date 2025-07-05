@@ -122,7 +122,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         return {
           ...token,
@@ -130,9 +130,48 @@ export const authOptions: NextAuthOptions = {
           isSubscribed: (user as any).isSubscribed,
         }
       }
+      
+      // Update token when session is updated
+      if (trigger === 'update' && session) {
+        return {
+          ...token,
+          ...session,
+        }
+      }
+      
       return token
     },
     async session({ session, token }) {
+      // Fetch fresh user data to ensure image is up to date
+      if (token.sub) {
+        const user = await db.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            isSubscribed: true,
+          },
+        })
+        
+        if (user) {
+          return {
+            ...session,
+            user: {
+              ...session.user,
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              role: user.role,
+              isSubscribed: user.isSubscribed,
+            },
+          }
+        }
+      }
+      
       return {
         ...session,
         user: {

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { Loader2, Save, Eye, X, Plus, Image as ImageIcon, Upload, Trash2 } from 'lucide-react'
 import { z } from 'zod'
 import Image from 'next/image'
+import RichTextEditor from '@/components/rich-text-editor'
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
@@ -36,8 +37,12 @@ interface Category {
 export default function WritePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  const editPostId = searchParams.get('edit')
+  const isEditing = !!editPostId
   
   const [formData, setFormData] = useState<PostFormData>({
     title: '',
@@ -56,6 +61,7 @@ export default function WritePage() {
   const [isPreview, setIsPreview] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [loadingCategories, setLoadingCategories] = useState(true)
+  const [loadingPost, setLoadingPost] = useState(false)
 
   // Fetch categories
   useEffect(() => {
@@ -86,11 +92,58 @@ export default function WritePage() {
     fetchCategories()
   }, [toast])
 
-  if (status === 'loading') {
+  // Fetch post data when editing
+  useEffect(() => {
+    if (isEditing && editPostId) {
+      const fetchPost = async () => {
+        setLoadingPost(true)
+        try {
+          const response = await fetch(`/api/posts/${editPostId}`)
+          const data = await response.json()
+          
+          if (response.ok) {
+            const post = data.post
+            setFormData({
+              title: post.title || '',
+              content: post.content || '',
+              excerpt: post.excerpt || '',
+              categoryId: post.categoryId || '',
+              tags: post.tags?.map((tag: any) => tag.name) || [],
+              featuredImage: post.coverImage || '',
+              published: post.published || false
+            })
+          } else {
+            toast({
+              title: "Error",
+              description: "Failed to load post data",
+              variant: "destructive"
+            })
+            router.push('/write')
+          }
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to load post data",
+            variant: "destructive"
+          })
+          router.push('/write')
+        } finally {
+          setLoadingPost(false)
+        }
+      }
+
+      fetchPost()
+    }
+  }, [isEditing, editPostId, toast, router])
+
+  if (status === 'loading' || loadingPost) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">
+            {status === 'loading' ? 'Loading...' : 'Loading post data...'}
+          </span>
         </div>
       </div>
     )
@@ -247,8 +300,11 @@ export default function WritePage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
+      const url = isEditing ? `/api/posts/${editPostId}` : '/api/posts'
+      const method = isEditing ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -258,18 +314,17 @@ export default function WritePage() {
       const data = await response.json()
 
       if (response.ok) {
+        const actionText = isEditing ? 'updated' : (published ? 'published' : 'saved')
         toast({
-          title: published ? "Post published!" : "Draft saved!",
-          description: published 
-            ? "Your post has been published successfully." 
-            : "Your draft has been saved successfully.",
+          title: `Post ${actionText}!`,
+          description: `Your post has been ${actionText} successfully.`,
           variant: "success",
         })
         router.push(published ? `/posts/${data.post.slug}` : '/dashboard')
       } else {
         toast({
           title: "Error",
-          description: data.error || 'Failed to save post',
+          description: data.error || `Failed to ${isEditing ? 'update' : 'save'} post`,
           variant: "destructive"
         })
       }
@@ -350,7 +405,7 @@ export default function WritePage() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Write New Post</h1>
+          <h1 className="text-2xl font-bold">{isEditing ? 'Edit Post' : 'Write New Post'}</h1>
           <Button variant="outline" onClick={() => setIsPreview(true)}>
             <Eye className="mr-2 h-4 w-4" />
             Preview
@@ -396,13 +451,11 @@ export default function WritePage() {
             {/* Content */}
             <div className="space-y-2">
               <Label htmlFor="content">Content *</Label>
-              <Textarea
-                id="content"
-                name="content"
+              <RichTextEditor
+                content={formData.content}
+                onChange={(content) => setFormData(prev => ({ ...prev, content }))}
                 placeholder="Write your post content here..."
-                value={formData.content}
-                onChange={handleChange}
-                className={`min-h-[400px] ${errors.content ? 'border-red-500' : ''}`}
+                error={!!errors.content}
               />
               {errors.content && (
                 <p className="text-sm text-red-500">{errors.content}</p>

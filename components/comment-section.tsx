@@ -62,8 +62,8 @@ export function CommentSection({ postId }: CommentSectionProps) {
         setComments(data.comments)
       }
     } catch (error) {
-      console.error('Error fetching comments:', error)
-    } finally {
+        // Comments fetch failed silently
+      } finally {
       setIsLoading(false)
     }
   }, [postId])

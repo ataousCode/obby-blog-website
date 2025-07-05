@@ -5,29 +5,44 @@ import { JWT } from "next-auth/jwt"
 export default withAuth(
   function middleware(req: NextRequest) {
     // Add any custom middleware logic here
+    console.log('Middleware executing for:', req.nextUrl.pathname)
   },
   {
     callbacks: {
       authorized: ({ token, req }: { token: JWT | null; req: NextRequest }) => {
+        const pathname = req.nextUrl.pathname
+        
+        // Allow public routes
+        if (pathname === '/' || 
+            pathname.startsWith('/posts') || 
+            pathname.startsWith('/auth') || 
+            pathname.startsWith('/api/auth') ||
+            pathname.startsWith('/_next') ||
+            pathname.startsWith('/favicon')) {
+          return true
+        }
+        
         // Check if user is authenticated for protected routes
-        if (req.nextUrl.pathname.startsWith('/admin')) {
+        if (pathname.startsWith('/admin')) {
           return token?.role === 'ADMIN'
         }
-        if (req.nextUrl.pathname.startsWith('/write')) {
+        if (pathname.startsWith('/write')) {
           return token?.role === 'ADMIN'
         }
-        if (req.nextUrl.pathname.startsWith('/dashboard')) {
+        if (pathname.startsWith('/dashboard')) {
           return token?.role === 'ADMIN'
         }
-        if (req.nextUrl.pathname.startsWith('/profile')) {
+        if (pathname.startsWith('/profile')) {
           return !!token
         }
-        if (req.nextUrl.pathname.startsWith('/my-posts')) {
+        if (pathname.startsWith('/my-posts')) {
           return token?.role === 'ADMIN'
         }
-        if (req.nextUrl.pathname.startsWith('/categories')) {
+        if (pathname.startsWith('/categories')) {
           return token?.role === 'ADMIN'
         }
+        
+        // Default to allowing access
         return true
       },
     },

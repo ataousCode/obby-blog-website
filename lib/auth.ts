@@ -142,36 +142,7 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      // Fetch fresh user data to ensure image is up to date
-      if (token.sub) {
-        const user = await db.user.findUnique({
-          where: { id: token.sub },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            role: true,
-            isSubscribed: true,
-          },
-        })
-        
-        if (user) {
-          return {
-            ...session,
-            user: {
-              ...session.user,
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              role: user.role,
-              isSubscribed: user.isSubscribed,
-            },
-          }
-        }
-      }
-      
+      // Use token data instead of database calls to avoid middleware issues
       return {
         ...session,
         user: {

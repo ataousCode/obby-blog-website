@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
               <BookOpen className="h-6 w-6" />
-              <span className="text-xl font-bold">My Blog</span>
+              <span className="text-xl font-bold">Obey Zveushe</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               A modern blog platform for Biology and Science enthusiasts. 

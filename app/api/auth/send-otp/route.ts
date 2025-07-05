@@ -15,11 +15,11 @@ function generateOTP(): string {
 
 async function createEmailClient() {
   try {
-    const { EmailClient } = await import('@/lib/email-client');
-    return new EmailClient();
+    const { ResendEmailClient } = await import('@/lib/resend-client');
+    return new ResendEmailClient();
   } catch (error) {
-    console.error('Error creating EmailClient instance:', error);
-    throw new Error(`Failed to create EmailClient: ${error instanceof Error ? error.message : String(error)}`);
+    console.error('Error creating ResendEmailClient instance:', error);
+    throw new Error(`Failed to create ResendEmailClient: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -46,38 +46,34 @@ async function sendOTPEmail(email: string, otp: string, type: string) {
   const text = `Your verification code is: ${otp}\nThis code expires in 10 minutes.`;
 
   try {
-    console.log('Creating email client...');
+    console.log('Creating Resend email client...');
     const emailClient = await createEmailClient();
     
-    console.log('Email client created, preparing to send email...');
+    console.log('Resend email client created, preparing to send email...');
     console.log('Email environment variables:', {
-      host: process.env.EMAIL_SERVER_HOST,
-      port: process.env.EMAIL_SERVER_PORT,
-      user: process.env.EMAIL_SERVER_USER ? '✓ Set' : '✗ Not set',
-      password: process.env.EMAIL_SERVER_PASSWORD ? '✓ Set' : '✗ Not set',
-      from: process.env.EMAIL_FROM,
-      secure: process.env.EMAIL_SECURE
+      resendApiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Not set',
+      from: process.env.EMAIL_FROM
     });
     
-    // Test SMTP connection before sending
+    // Test connection (Resend doesn't need SMTP connection testing)
     try {
-      console.log('Testing SMTP connection...');
+      console.log('Testing Resend client...');
       await emailClient.testConnection();
-      console.log('SMTP connection test passed, proceeding to send email');
+      console.log('Resend client test passed, proceeding to send email');
     } catch (connError) {
-      console.error('SMTP connection test failed:', connError);
-      throw new Error(`SMTP connection failed: ${connError instanceof Error ? connError.message : String(connError)}`);
+      console.error('Resend client test failed:', connError);
+      throw new Error(`Resend client failed: ${connError instanceof Error ? connError.message : String(connError)}`);
     }
     
     await emailClient.sendEmail({
-      from: process.env.EMAIL_FROM || 'noreply@myblog.local',
+      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
       to: email,
       subject,
       text,
       html,
     });
 
-    console.log('Email sent successfully via emailjs client');
+    console.log('Email sent successfully via Resend client');
     return { success: true };
   } catch (error) {
     console.error('Email sending failed:', error);

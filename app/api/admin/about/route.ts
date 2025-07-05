@@ -11,6 +11,7 @@ const getPrisma = async () => {
 
 export async function GET() {
   try {
+    // Prevent runtime-dependent code during build
     if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
       return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
     }
@@ -40,6 +41,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Prevent runtime-dependent code during build
     if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
       return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
     }

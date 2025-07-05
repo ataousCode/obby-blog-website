@@ -15,11 +15,11 @@ function generateOTP(): string {
 
 async function createEmailClient() {
   try {
-    const { ResendEmailClient } = await import('@/lib/resend-client');
-    return new ResendEmailClient();
+    const { EmailClient } = await import('@/lib/email-client');
+    return new EmailClient();
   } catch (error) {
-    console.error('Error creating ResendEmailClient instance:', error);
-    throw new Error(`Failed to create ResendEmailClient: ${error instanceof Error ? error.message : String(error)}`);
+    console.error('Error creating EmailClient instance:', error);
+    throw new Error(`Failed to create EmailClient: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -46,23 +46,25 @@ async function sendOTPEmail(email: string, otp: string, type: string) {
   const text = `Your verification code is: ${otp}\nThis code expires in 10 minutes.`;
 
   try {
-    console.log('Creating Resend email client...');
+    console.log('Creating Gmail SMTP email client...');
     const emailClient = await createEmailClient();
     
-    console.log('Resend email client created, preparing to send email...');
+    console.log('Gmail SMTP email client created, preparing to send email...');
     console.log('Email environment variables:', {
-      resendApiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Not set',
+      emailHost: process.env.EMAIL_SERVER_HOST ? '✓ Set' : '✗ Not set',
+      emailUser: process.env.EMAIL_SERVER_USER ? '✓ Set' : '✗ Not set',
+      emailPassword: process.env.EMAIL_SERVER_PASSWORD ? '✓ Set' : '✗ Not set',
       from: process.env.EMAIL_FROM
     });
     
-    // Test connection (Resend doesn't need SMTP connection testing)
+    // Test SMTP connection
     try {
-      console.log('Testing Resend client...');
+      console.log('Testing Gmail SMTP connection...');
       await emailClient.testConnection();
-      console.log('Resend client test passed, proceeding to send email');
+      console.log('Gmail SMTP connection test passed, proceeding to send email');
     } catch (connError) {
-      console.error('Resend client test failed:', connError);
-      throw new Error(`Resend client failed: ${connError instanceof Error ? connError.message : String(connError)}`);
+      console.error('Gmail SMTP connection test failed:', connError);
+      throw new Error(`Gmail SMTP client failed: ${connError instanceof Error ? connError.message : String(connError)}`);
     }
     
     await emailClient.sendEmail({
@@ -73,7 +75,7 @@ async function sendOTPEmail(email: string, otp: string, type: string) {
       html,
     });
 
-    console.log('Email sent successfully via Resend client');
+    console.log('Email sent successfully via Gmail SMTP client');
     return { success: true };
   } catch (error) {
     console.error('Email sending failed:', error);

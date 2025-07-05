@@ -34,7 +34,7 @@ class ResendEmailClient {
         from: options.from,
         to: options.to,
         subject: options.subject,
-        text: options.text,
+        text: options.text || options.subject,
         html: options.html,
       });
 

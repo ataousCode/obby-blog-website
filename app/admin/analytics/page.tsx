@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -51,11 +50,7 @@ export default function AnalyticsPage() {
     }
   }, [session, status])
 
-  useEffect(() => {
-    fetchAnalyticsData()
-  }, [period])
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     try {
       setLoading(true)
       const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
@@ -69,7 +64,11 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [period])
+
+  useEffect(() => {
+    fetchAnalyticsData()
+  }, [fetchAnalyticsData])
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)

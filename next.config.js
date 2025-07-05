@@ -34,13 +34,35 @@ const nextConfig = {
   },
   
   // Webpack optimizations
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config, { isServer, dev, webpack }) => {
     if (isServer) {
       config.externals.push('@prisma/client')
+      // Exclude client-side libraries from server-side bundling
+      config.externals.push('emailjs')
+      config.externals.push('resend')
+      // Exclude Tiptap packages that use browser APIs
+      config.externals.push('@tiptap/react')
+      config.externals.push('@tiptap/core')
+      config.externals.push('@tiptap/starter-kit')
+      config.externals.push('@tiptap/pm')
+      
+      // Fix webpack chunk loading for server-side
+      config.output.globalObject = 'this'
+      
+      // Disable chunk splitting for server builds to avoid self reference
+      config.optimization.splitChunks = false
     }
     
-    // Production optimizations
-    if (!dev) {
+    // Handle client-side only packages
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    }
+    
+    // Production optimizations for client-side only
+    if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
         splitChunks: {

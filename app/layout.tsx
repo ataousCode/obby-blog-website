@@ -6,8 +6,15 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { Toaster } from '@/components/ui/toaster'
 import { AuthProvider } from '@/components/auth-provider'
-import AnalyticsTracker from '@/components/analytics-tracker'
-import { PerformanceMonitor } from '@/components/performance-monitor'
+import dynamic from 'next/dynamic'
+
+const AnalyticsTracker = dynamic(() => import('@/components/analytics-tracker'), {
+  ssr: false
+})
+
+const PerformanceMonitor = dynamic(() => import('@/components/performance-monitor').then(mod => ({ default: mod.PerformanceMonitor })), {
+  ssr: false
+})
 
 const inter = Inter({ subsets: ['latin'] })
 

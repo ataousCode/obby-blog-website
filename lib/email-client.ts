@@ -112,26 +112,11 @@ class EmailClient {
       console.log(`Using configured SMTP settings from environment variables`);
       console.log(`From: ${options.from}, To: ${options.to}`);
       
-      // Add timeout for sending email
-      const sendWithTimeout = async () => {
-        return new Promise<any>((resolve, reject) => {
-          const timeoutId = setTimeout(() => {
-            reject(new Error('Email sending timed out after 30 seconds'));
-          }, 30000); // 30 second timeout
-          
-          client.sendAsync(message)
-            .then(result => {
-              clearTimeout(timeoutId);
-              resolve(result);
-            })
-            .catch(err => {
-              clearTimeout(timeoutId);
-              reject(err);
-            });
-        });
-      };
-      
-      const result = await sendWithTimeout();
+      if (!this.client) {
+         throw new Error('SMTP client not initialized');
+       }
+       
+       const result = await this.client.sendAsync(message);
       console.log('Email sent successfully:', result);
       return { success: true, result };
     } catch (error) {

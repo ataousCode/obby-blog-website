@@ -1,12 +1,13 @@
 'use client'
 
 import { useEditor, EditorContent } from '@tiptap/react'
-import { useEffect } from 'react'
+// import { Color } from '@tiptap/extension-color'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import ListItem from '@tiptap/extension-list-item'
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { 
   Bold, 

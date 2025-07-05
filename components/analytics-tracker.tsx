@@ -13,6 +13,9 @@ export default function AnalyticsTracker({ postId }: AnalyticsTrackerProps) {
   const { data: session } = useSession()
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+
     // Generate or get session ID
     let sessionId = localStorage.getItem('analytics_session_id')
     if (!sessionId) {
@@ -74,6 +77,8 @@ async function trackPageView(data: {
 }
 
 function updateSessionActivity(sessionId: string) {
+  if (typeof window === 'undefined') return
+  
   const startTime = localStorage.getItem(`session_start_${sessionId}`)
   if (!startTime) {
     localStorage.setItem(`session_start_${sessionId}`, Date.now().toString())
@@ -84,6 +89,8 @@ function updateSessionActivity(sessionId: string) {
 }
 
 function endSession(sessionId: string) {
+  if (typeof window === 'undefined') return
+  
   const startTime = localStorage.getItem(`session_start_${sessionId}`)
   const lastActivity = localStorage.getItem(`session_last_activity_${sessionId}`)
   
@@ -91,10 +98,12 @@ function endSession(sessionId: string) {
     const duration = Math.floor((parseInt(lastActivity) - parseInt(startTime)) / 1000)
     
     // Send session end data
-    navigator.sendBeacon('/api/analytics/session-end', JSON.stringify({
-      sessionId,
-      duration
-    }))
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/analytics/session-end', JSON.stringify({
+        sessionId,
+        duration
+      }))
+    }
   }
 }
 

@@ -14,7 +14,12 @@ import { useToast } from '@/components/ui/use-toast'
 import { Loader2, Save, Eye, X, Plus, Image as ImageIcon, Upload, Trash2 } from 'lucide-react'
 import { z } from 'zod'
 import Image from 'next/image'
-import RichTextEditor from '@/components/rich-text-editor'
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(() => import('@/components/rich-text-editor'), {
+  ssr: false,
+  loading: () => <div className="h-64 border rounded-md flex items-center justify-center">Loading editor...</div>
+})
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),

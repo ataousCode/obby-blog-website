@@ -124,7 +124,8 @@ export default function AdminAboutPage() {
         handleInputChange('profileImage', data.url)
         toast({
           title: 'Success',
-          description: 'Profile image uploaded successfully'
+          description: 'Profile image uploaded successfully',
+          variant: 'success'
         })
       } else {
         const errorData = await response.json()
@@ -160,7 +161,8 @@ export default function AdminAboutPage() {
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'About page updated successfully'
+          description: 'About page updated successfully',
+          variant: 'success'
         })
       } else {
         throw new Error('Failed to update')

@@ -91,6 +91,7 @@ export function PostActions({ postId, className }: PostActionsProps) {
         toast({
           title: isLiked ? "Post unliked" : "Post liked",
           description: isLiked ? "Removed from your liked posts." : "Added to your liked posts.",
+          variant: "success"
         })
       } else {
         toast({
@@ -134,6 +135,7 @@ export function PostActions({ postId, className }: PostActionsProps) {
         toast({
           title: isBookmarked ? "Bookmark removed" : "Post bookmarked",
           description: isBookmarked ? "Removed from your bookmarks." : "Added to your bookmarks.",
+          variant: "success"
         })
       } else {
         toast({
@@ -177,6 +179,7 @@ export function PostActions({ postId, className }: PostActionsProps) {
       toast({
         title: "Link copied",
         description: "Post link copied to clipboard.",
+        variant: "success"
       })
     } catch (error) {
       toast({

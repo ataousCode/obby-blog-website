@@ -110,7 +110,8 @@ export default function AdminCommentsPage() {
         setComments(comments.filter(comment => comment.id !== commentId))
         toast({
           title: "Success",
-          description: "Comment deleted successfully"
+          description: "Comment deleted successfully",
+          variant: "success"
         })
       } else {
         const data = await response.json()

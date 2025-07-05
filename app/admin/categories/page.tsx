@@ -136,7 +136,8 @@ export default function AdminCategoriesPage() {
         setIsCreateDialogOpen(false)
         toast({
           title: "Success",
-          description: "Category created successfully"
+          description: "Category created successfully",
+          variant: "success"
         })
       } else {
         toast({
@@ -189,7 +190,8 @@ export default function AdminCategoriesPage() {
         setIsEditDialogOpen(false)
         toast({
           title: "Success",
-          description: "Category updated successfully"
+          description: "Category updated successfully",
+          variant: "success"
         })
       } else {
         toast({
@@ -220,7 +222,8 @@ export default function AdminCategoriesPage() {
         setCategories(categories.filter(cat => cat.id !== categoryId))
         toast({
           title: "Success",
-          description: "Category deleted successfully"
+          description: "Category deleted successfully",
+          variant: "success"
         })
       } else {
         const data = await response.json()

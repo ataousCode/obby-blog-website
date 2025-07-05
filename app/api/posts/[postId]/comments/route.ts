@@ -88,6 +88,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     // Create comment
+    console.log('Creating comment with data:', {
+      content,
+      postId,
+      authorId: session.user.id,
+      parentId: parentId || null
+    })
+    
     const comment = await prisma.comment.create({
       data: {
         content,
@@ -112,6 +119,8 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         }
       }
     })
+
+    console.log('Comment created successfully:', comment)
 
     return NextResponse.json(
       { 
@@ -146,11 +155,25 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     
     const skip = (page - 1) * limit
 
+    console.log('Fetching comments for postId:', postId)
+
+    // Debug: Get all comments for this post
+    const allComments = await prisma.comment.findMany({
+      where: { postId }
+    });
+    console.log(`[DEBUG] All comments for post ${postId}:`, JSON.stringify(allComments, null, 2));
+    console.log(`[DEBUG] Total comments found: ${allComments.length}`);
+    allComments.forEach((comment, index) => {
+      console.log(`[DEBUG] Comment ${index + 1}: parentId = ${comment.parentId} (type: ${typeof comment.parentId}), content = ${comment.content.substring(0, 50)}...`);
+    });
+    
+    // Debug: Test different parentId queries - removed empty string test to avoid ObjectID error
+
     // Get top-level comments with their replies
     const comments = await prisma.comment.findMany({
       where: {
         postId,
-        parentId: null // Only top-level comments
+        parentId: { isSet: false }
       },
       include: {
         author: {
@@ -196,14 +219,17 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       take: limit
     })
 
-    const total = await prisma.comment.count({
+    const totalComments = await prisma.comment.count({
       where: {
         postId,
-        parentId: null
+        parentId: { isSet: false }
       }
     })
 
-    const totalPages = Math.ceil(total / limit)
+    console.log('Found comments:', comments.length, 'Total:', totalComments)
+    console.log('Comments data:', comments)
+
+    const totalPages = Math.ceil(totalComments / limit)
     const hasNext = page < totalPages
     const hasPrev = page > 1
 
@@ -212,7 +238,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       pagination: {
         page,
         limit,
-        total,
+        total: totalComments,
         totalPages,
         hasNext,
         hasPrev

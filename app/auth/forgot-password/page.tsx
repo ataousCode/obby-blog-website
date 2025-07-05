@@ -213,6 +213,7 @@ export default function ForgotPasswordPage() {
         toast({
           title: "Password reset successful!",
           description: "Your password has been updated. You can now sign in.",
+          variant: "success"
         })
         
         // Redirect to sign in page after a short delay
@@ -258,6 +259,7 @@ export default function ForgotPasswordPage() {
         toast({
           title: "Code resent!",
           description: "A new verification code has been sent to your email.",
+          variant: "success"
         })
       } else {
         toast({

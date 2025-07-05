@@ -117,7 +117,8 @@ export default function MyPostsPage() {
       if (response.ok) {
         toast({
           title: "Success",
-          description: "Post deleted successfully"
+          description: "Post deleted successfully",
+          variant: "success"
         })
         fetchPosts()
       } else {

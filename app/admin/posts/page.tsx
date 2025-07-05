@@ -112,7 +112,8 @@ export default function AdminPostsPage() {
         setPosts(posts.filter(post => post.id !== postId))
         toast({
           title: "Success",
-          description: "Post deleted successfully"
+          description: "Post deleted successfully",
+          variant: "success"
         })
       } else {
         const data = await response.json()
@@ -155,7 +156,8 @@ export default function AdminPostsPage() {
         ))
         toast({
           title: "Success",
-          description: `Post ${!currentlyPublished ? 'published' : 'unpublished'} successfully`
+          description: `Post ${!currentlyPublished ? 'published' : 'unpublished'} successfully`,
+          variant: "success"
         })
       } else {
         toast({

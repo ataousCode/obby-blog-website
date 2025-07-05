@@ -15,6 +15,13 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const category = await prisma.category.findUnique({
       where: { id: params.id },
       include: {
@@ -65,6 +72,13 @@ export async function PUT(
     }
 
     // Check if user is admin
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { role: true }
@@ -192,6 +206,13 @@ export async function DELETE(
     }
 
     // Check if user is admin
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { role: true }

@@ -25,6 +25,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { commentId } = params
     const body = await req.json()
     
@@ -130,6 +137,13 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { commentId } = params
 
     // Check if comment exists
@@ -195,6 +209,13 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { commentId } = params
 
     const comment = await prisma.comment.findUnique({

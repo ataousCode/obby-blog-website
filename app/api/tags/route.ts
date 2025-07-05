@@ -6,6 +6,13 @@ import { authOptions } from '@/lib/auth'
 // GET /api/tags - Get all tags
 export async function GET(request: NextRequest) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const tags = await prisma.tag.findMany({
       orderBy: {
         name: 'asc'
@@ -38,6 +45,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
       )
     }
 

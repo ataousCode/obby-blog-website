@@ -26,6 +26,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { postId } = params
     const body = await req.json()
     
@@ -121,6 +128,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { postId } = params
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')

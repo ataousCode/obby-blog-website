@@ -13,6 +13,12 @@ export const metadata: Metadata = {
 
 async function getAboutPageData() {
   try {
+    // Check if prisma client is available
+    if (!prisma) {
+      console.warn('Prisma client not available, using fallback data')
+      return { aboutPage: null, adminUser: null }
+    }
+    
     const aboutPage = await prisma.aboutPage.findFirst()
     // Also fetch admin user data for profile info
     const adminUser = await prisma.user.findFirst({

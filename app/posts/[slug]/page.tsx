@@ -20,6 +20,12 @@ interface PostPageProps {
 
 async function getPost(slug: string) {
   try {
+    // Check if prisma client is available
+    if (!prisma) {
+      console.warn('Prisma client not available')
+      return null
+    }
+    
     const post = await prisma.post.findUnique({
       where: {
         slug,
@@ -54,6 +60,12 @@ async function getPost(slug: string) {
 
 async function getRelatedPosts(postId: string, categoryId?: string, limit: number = 3) {
   try {
+    // Check if prisma client is available
+    if (!prisma) {
+      console.warn('Prisma client not available')
+      return []
+    }
+    
     const relatedPosts = await prisma.post.findMany({
       where: {
         id: { not: postId },
@@ -98,10 +110,12 @@ export default async function PostPage({ params }: PostPageProps) {
 
   // Increment view count
   try {
-    await prisma.post.update({
-      where: { id: post.id },
-      data: { views: { increment: 1 } }
-    })
+    if (prisma) {
+      await prisma.post.update({
+        where: { id: post.id },
+        data: { views: { increment: 1 } }
+      })
+    }
   } catch (error) {
     console.error('Error incrementing view count:', error)
   }

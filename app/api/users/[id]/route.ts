@@ -29,6 +29,13 @@ export async function GET(
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const user = await prisma.user.findUnique({
       where: { id },
       select: {
@@ -144,6 +151,13 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }
+      )
+    }
+
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
       )
     }
 

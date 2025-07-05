@@ -22,6 +22,13 @@ interface RouteParams {
 // Get a single post
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { postId } = params
 
     const post = await prisma.post.findUnique({
@@ -73,6 +80,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
       )
     }
 
@@ -236,6 +250,13 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
       )
     }
 

@@ -20,6 +20,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { postId } = params
 
     // Check if post exists
@@ -81,6 +88,13 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
       )
     }
 

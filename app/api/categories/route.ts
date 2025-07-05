@@ -27,6 +27,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user is admin
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { role: true }
@@ -113,6 +120,13 @@ export async function POST(req: NextRequest) {
 // Get all categories
 export async function GET(req: NextRequest) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const { searchParams } = new URL(req.url)
     const includePostCount = searchParams.get('includePostCount') === 'true'
     const page = parseInt(searchParams.get('page') || '1')

@@ -38,6 +38,11 @@ interface Category {
 
 async function getFeaturedPosts(): Promise<Post[]> {
   try {
+    if (!prisma) {
+      console.error('Database not available')
+      return []
+    }
+
     const posts = await prisma.post.findMany({
       where: {
         publishedAt: { not: null }
@@ -81,6 +86,11 @@ async function getFeaturedPosts(): Promise<Post[]> {
 
 async function getCategories(): Promise<Category[]> {
   try {
+    if (!prisma) {
+      console.error('Database not available')
+      return []
+    }
+
     const categories = await prisma.category.findMany({
       select: {
         id: true,

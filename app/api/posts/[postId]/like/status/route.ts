@@ -20,6 +20,13 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { isLiked: false },
+        { status: 200 }
+      )
+    }
+
     const { postId } = params
 
     const like = await prisma.like.findUnique({

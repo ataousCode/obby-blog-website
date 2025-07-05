@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-
-// Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Lazy load prisma to avoid build-time database connection
 const getPrisma = async () => {
   const { prisma } = await import('@/lib/prisma')
   return prisma
 }
 
-// GET - Fetch about page content
 export async function GET() {
   try {
-    // Skip database operations during build time
     if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
       return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
     }
@@ -26,28 +21,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get the first (and should be only) about page record
     const prisma = await getPrisma()
-    let aboutPage = await prisma.aboutPage.findFirst()
-    
-    // If no about page exists, create a default one
+    const aboutPage = await prisma.aboutPage.findFirst()
+
     if (!aboutPage) {
-      aboutPage = await prisma.aboutPage.create({
-        data: {
-          name: 'Dr. [Your Name]',
-          title: 'Professor of Biology and Science | Post Doc Researcher',
-          aboutMe: 'I am a dedicated researcher with a passion for advancing our understanding of biological sciences. With over 8 years of experience in research and publishing, I strive to contribute meaningful insights to the scientific community.',
-          education: 'PhD in Biology and Science\nPost Doctoral Research at Southwest University of Science and Technology',
-          experience: '8+ years of research experience\nExtensive publication record in peer-reviewed journals\nActive participation in scientific conferences and symposiums',
-          researchInterests: 'Molecular Biology,Cell Biology,Genetics,Biochemistry,Biotechnology,Environmental Science',
-          publications: 'Over 20 peer-reviewed publications\nRegular contributor to leading scientific journals\nActive researcher in cutting-edge biological sciences',
-          contactEmail: '[your-email]@university.edu',
-          contactPhone: '+1 (555) 123-4567',
-          contactLocation: 'Southwest University of Science and Technology',
-          blogPurpose: 'This blog serves as a platform to share scientific insights, research findings, and thoughts on the latest developments in biological sciences. Whether you\'re a fellow researcher, student, or science enthusiast, I hope you find the content both informative and inspiring.',
-          profileImage: '/images/profile.svg'
-        }
-      })
+      return NextResponse.json({ error: 'No about page content found' }, { status: 404 })
     }
 
     return NextResponse.json(aboutPage)
@@ -60,10 +38,8 @@ export async function GET() {
   }
 }
 
-// PUT - Update about page content
 export async function PUT(request: NextRequest) {
   try {
-    // Skip database operations during build time
     if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
       return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
     }
@@ -76,7 +52,6 @@ export async function PUT(request: NextRequest) {
 
     const data = await request.json()
     
-    // Validate required fields
     const {
       profileImage,
       name,
@@ -92,12 +67,10 @@ export async function PUT(request: NextRequest) {
       blogPurpose
     } = data
 
-    // Get the first about page record or create if doesn't exist
     const prisma = await getPrisma()
     let aboutPage = await prisma.aboutPage.findFirst()
     
     if (aboutPage) {
-      // Update existing record
       aboutPage = await prisma.aboutPage.update({
         where: { id: aboutPage.id },
         data: {
@@ -117,7 +90,6 @@ export async function PUT(request: NextRequest) {
         }
       })
     } else {
-      // Create new record
       aboutPage = await prisma.aboutPage.create({
         data: {
           profileImage,

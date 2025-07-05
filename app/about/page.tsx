@@ -6,6 +6,10 @@ import { Separator } from '@/components/ui/separator'
 import { GraduationCap, BookOpen, Award, MapPin, Mail, Globe } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
+// Force dynamic rendering to ensure fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: 'About - My Blog',
   description: 'Learn more about Dr. [Your Name], Professor of Biology and Science with over 8 years of research experience.',

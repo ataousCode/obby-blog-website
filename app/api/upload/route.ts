@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { v2 as cloudinary, UploadApiResponse, UploadApiErrorResponse } from 'cloudinary'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

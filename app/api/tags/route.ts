@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
+// Force dynamic rendering to prevent caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/tags - Get all tags
 export async function GET(request: NextRequest) {
   try {

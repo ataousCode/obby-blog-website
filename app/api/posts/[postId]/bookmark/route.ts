@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 interface RouteParams {
   params: {
@@ -13,6 +11,16 @@ interface RouteParams {
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
+    // Prevent runtime-dependent code during build
+    if (!process.env.DATABASE_URL) {
+      console.warn('Database not available during build')
+      return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
+    }
+
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database connection not available' }, { status: 503 })
+    }
+
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
@@ -77,6 +85,16 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
+    // Prevent runtime-dependent code during build
+    if (!process.env.DATABASE_URL) {
+      console.warn('Database not available during build')
+      return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
+    }
+
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database connection not available' }, { status: 503 })
+    }
+
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {

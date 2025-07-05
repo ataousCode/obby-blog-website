@@ -9,11 +9,20 @@ export const runtime = 'nodejs'
 // Lazy load prisma to avoid build-time database connection
 const getPrisma = async () => {
   const { prisma } = await import('@/lib/prisma')
+  if (!prisma) {
+    throw new Error('Prisma client not available')
+  }
   return prisma
 }
 
 export async function GET(req: NextRequest) {
   try {
+    // Prevent runtime-dependent code during build
+    if (!process.env.DATABASE_URL) {
+      console.warn('Database not available during build')
+      return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
+    }
+
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {

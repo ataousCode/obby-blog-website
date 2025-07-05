@@ -1,16 +1,12 @@
 {
-  "buildCommand": "next build",
-  "devCommand": "next dev",
-  "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next",
-      "config": {
-        "skipBuildIdentifier": "api/admin"
-      }
+  "buildCommand": "prisma generate && next build",
+  "env": {
+    "SKIP_ENV_VALIDATION": "1"
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
     }
-  ]
+  }
 }

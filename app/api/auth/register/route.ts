@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
 import { z } from 'zod'
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -13,6 +12,16 @@ const registerSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Prevent runtime-dependent code during build
+    if (!process.env.DATABASE_URL) {
+      console.warn('Database not available during build')
+      return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
+    }
+
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database connection not available' }, { status: 503 })
+    }
+
     const body = await request.json()
     
     // Validate input

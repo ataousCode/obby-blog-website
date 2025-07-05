@@ -9,6 +9,16 @@ export const dynamic = 'force-dynamic'
 // Get all posts for admin
 export async function GET(req: NextRequest) {
   try {
+    // Prevent runtime-dependent code during build
+    if (!process.env.DATABASE_URL) {
+      console.warn('Database not available during build')
+      return NextResponse.json({ error: 'Database not available during build' }, { status: 503 })
+    }
+
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database connection not available' }, { status: 503 })
+    }
+
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
